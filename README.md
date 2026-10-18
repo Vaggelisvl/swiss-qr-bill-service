@@ -4,6 +4,14 @@
 
 A small Spring Boot 3 / Java 21 service that validates the data of a Swiss QR-bill and produces the QR code payload and image. Built as a showcase of clean, testable Java: hexagonal architecture, self-validating value objects, sealed types and an architecture that the build enforces.
 
+![Demo](docs/img/demo.gif)
+
+| Result | Validation error | Mobile |
+|---|---|---|
+| ![Generated QR code](docs/img/demo-success.png) | ![Invalid reference](docs/img/demo-validation-error.png) | <img src="docs/img/demo-mobile.png" width="220" alt="Mobile view"> |
+
+A small demo UI is served at `/` when the app is running.
+
 ## What it does
 - Validates **IBAN / QR-IBAN** (CH, LI, ISO 7064 mod 97), **QR reference** (27 digits, mod 10 recursive), **creditor reference** (ISO 11649), amount, currency and addresses.
 - Encodes the 32-line payload of the Swiss QR code (`SPC`, version `0200`).
