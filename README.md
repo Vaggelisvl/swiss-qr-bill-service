@@ -4,6 +4,8 @@
 
 A small Spring Boot 3 / Java 21 service that validates the data of a Swiss QR-bill and produces the QR code payload and image. Built as a showcase of clean, testable Java: hexagonal architecture, self-validating value objects, sealed types and an architecture that the build enforces.
 
+**Live demo:** https://swiss-qr-bill-service.onrender.com (free plan: the first request after idle can take about a minute)
+
 ![Demo](docs/img/demo.gif)
 
 | Result | Validation error | Mobile |
