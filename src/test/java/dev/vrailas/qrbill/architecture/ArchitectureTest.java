@@ -1,27 +1,45 @@
 package dev.vrailas.qrbill.architecture;
 
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.junit.AnalyzeClasses;
-import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.lang.ArchRule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /** Executable architecture: the hexagon's dependency rule is enforced on every build. */
-@AnalyzeClasses(packages = "dev.vrailas.qrbill", importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchitectureTest {
 
-    @ArchTest
-    static final ArchRule domainDependsOnNothingElse = noClasses().that().resideInAPackage("..domain..")
-            .should().dependOnClassesThat().resideInAnyPackage("..application..", "..adapter..", "..config..",
-                    "org.springframework..", "com.google.zxing..", "jakarta..");
+    private static JavaClasses classes;
 
-    @ArchTest
-    static final ArchRule applicationIsFrameworkFree = noClasses().that().resideInAPackage("..application..")
-            .should().dependOnClassesThat().resideInAnyPackage("..adapter..", "..config..",
-                    "org.springframework..", "com.google.zxing..", "jakarta..");
+    @BeforeAll
+    static void importClasses() {
+        classes = new ClassFileImporter().withImportOption(new ImportOption.DoNotIncludeTests()).importPackages("dev.vrailas.qrbill");
+        assertThat(classes.size()).as("classes imported").isGreaterThan(10);
+    }
 
-    @ArchTest
-    static final ArchRule adaptersDoNotDependOnEachOther = noClasses().that().resideInAPackage("..adapter.in..")
-            .should().dependOnClassesThat().resideInAPackage("..adapter.out..");
+    @Test
+    void domainDependsOnNothingElse() {
+        noClasses().that().resideInAPackage("..domain..")
+                .should().dependOnClassesThat().resideInAnyPackage("..application..", "..adapter..", "..config..",
+                        "org.springframework..", "com.google.zxing..", "jakarta..")
+                .check(classes);
+    }
+
+    @Test
+    void applicationIsFrameworkFree() {
+        noClasses().that().resideInAPackage("..application..")
+                .should().dependOnClassesThat().resideInAnyPackage("..adapter..", "..config..",
+                        "org.springframework..", "com.google.zxing..", "jakarta..")
+                .check(classes);
+    }
+
+    @Test
+    void inboundAdaptersDoNotDependOnOutboundAdapters() {
+        noClasses().that().resideInAPackage("..adapter.in..")
+                .should().dependOnClassesThat().resideInAPackage("..adapter.out..")
+                .check(classes);
+    }
 }
