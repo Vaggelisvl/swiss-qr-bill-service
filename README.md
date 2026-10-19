@@ -79,3 +79,8 @@ Structured addresses only, no alternative procedures or full payment-part layout
 
 ## License
 MIT
+
+## Deploy (Render, free plan)
+1. Create a free account at https://render.com and choose **New > Blueprint**.
+2. Select this repository; `render.yaml` configures a Docker web service.
+3. After the build, the demo UI is available at the `onrender.com` URL. The free plan sleeps when idle, so the first request can take about a minute.
